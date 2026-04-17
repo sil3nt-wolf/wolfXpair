@@ -1,0 +1,5 @@
+node_modules/
+sessions/
+*.session
+attached_assets/
+.replit-artifact/

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOLF TECH — Pair Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: 'JetBrains Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { text-decoration: none; color: inherit; }
+    :root {
+      --primary: #00ff00;
+      --primary-border: rgba(0,255,0,0.2);
+      --primary-border-hover: rgba(0,255,0,0.4);
+      --primary-glow: 0 0 20px rgba(0,255,0,0.3);
+      --gray-500: #6b7280;
+      --gray-400: #9ca3af;
+      --gray-300: #d1d5db;
+      --white: #ffffff;
+      --card-bg: rgba(0,0,0,0.4);
+    }
+
+    .neon-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        linear-gradient(rgba(0,255,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,0,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+    .neon-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,0,0.06) 0%, transparent 70%);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,255,0,0.3); border-radius: 2px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--primary-border);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(0,255,0,0.05);
+      border: 1px solid var(--primary-border);
+      display: flex; align-items: center; justify-content: center;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    .logo-icon svg { width: 22px; height: 22px; }
+    .logo-text { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.2rem; letter-spacing: 0.15em; }
+    .logo-wolf { color: var(--primary); }
+    .logo-bot  { color: var(--gray-300); }
+    .logo-sub  { font-size: 0.65rem; color: var(--gray-500); margin-top: 2px; }
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; font-size: 0.78rem;
+      color: var(--gray-400);
+      border: 1px solid var(--primary-border);
+      border-radius: 8px; transition: all 0.2s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .nav-back:hover { color: var(--white); background: rgba(0,255,0,0.05); border-color: var(--primary-border-hover); }
+
+    /* Page layout */
+    .page {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 6rem 1.5rem 3rem;
+      position: relative; z-index: 10;
+    }
+    .card {
+      width: 100%; max-width: 480px;
+      padding: 40px 36px;
+      border-radius: 20px;
+      border: 1px solid var(--primary-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      position: relative; overflow: hidden;
+      animation: fadeInUp 0.6s ease both;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,0,0.5), transparent);
+    }
+
+    .section-label {
+      font-size: 0.7rem; letter-spacing: 0.2em;
+      color: var(--primary); text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .card-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900; font-size: 1.6rem;
+      color: var(--white); margin-bottom: 0.5rem;
+    }
+    .card-desc { font-size: 0.8rem; color: var(--gray-400); line-height: 1.6; margin-bottom: 2rem; }
+
+    /* Form */
+    .input-label { font-size: 0.72rem; color: var(--gray-400); margin-bottom: 6px; display: block; }
+    .input-field {
+      width: 100%; padding: 13px 16px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--primary-border);
+      border-radius: 10px;
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 16px;
+    }
+    .input-field::placeholder { color: rgba(0,255,0,0.3); }
+    .input-field:focus { border-color: var(--primary-border-hover); box-shadow: 0 0 0 3px rgba(0,255,0,0.08); }
+
+    .btn-primary {
+      width: 100%; padding: 13px;
+      background: rgba(0,255,0,0.1);
+      color: var(--primary);
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 10px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700; font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary:hover { background: rgba(0,255,0,0.18); transform: translateY(-1px); box-shadow: var(--primary-glow); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      width: 100%; padding: 11px;
+      background: transparent;
+      color: var(--gray-400);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; cursor: pointer;
+      transition: all 0.2s; margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-ghost:hover { color: var(--white); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+    /* Loading bar */
+    .loading-bar {
+      height: 3px;
+      background: rgba(0,255,0,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 14px 0;
+      display: none;
+    }
+    .loading-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      animation: sweep 1.4s ease-in-out infinite;
+    }
+    @keyframes sweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+
+    /* Result box */
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,255,0,0.3);
+      background: rgba(0,255,0,0.04);
+      display: none;
+    }
+    .result-label { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--gray-500); text-transform: uppercase; margin-bottom: 10px; }
+    .pair-code {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem; font-weight: 900;
+      color: var(--white); letter-spacing: 8px;
+      text-align: center; margin-bottom: 14px;
+    }
+    .btn-copy {
+      width: 100%; padding: 10px;
+      background: rgba(0,255,0,0.12);
+      color: var(--primary);
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-copy:hover { background: rgba(0,255,0,0.2); }
+
+    .error-msg { color: #ff4d4d; font-size: 0.82rem; margin-top: 12px; display: none; }
+
+    /* Divider */
+    .divider { height: 1px; background: rgba(0,255,0,0.08); margin: 20px 0; }
+
+    /* Animations */
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(0,255,0,0.15); }
+      50%       { box-shadow: 0 0 24px rgba(0,255,0,0.3); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      position: relative; z-index: 10;
+      border-top: 1px solid rgba(0,255,0,0.1);
+      background: rgba(0,0,0,0.5);
+      padding: 1.5rem; text-align: center;
+    }
+    .footer-copy { font-size: 0.7rem; color: var(--gray-500); }
+
+    @media (max-width: 520px) { .card { padding: 28px 20px; } .pair-code { font-size: 1.5rem; letter-spacing: 4px; } }
+  </style>
+</head>
+<body>
+  <div class="neon-bg"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text"><span class="logo-wolf">WOLF</span><span class="logo-bot"> TECH</span></div>
+          <div class="logo-sub">Session Generator</div>
+        </div>
+      </div>
+      <a href="index.html" class="nav-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="card">
+      <p class="section-label">// pair via phone</p>
+      <h1 class="card-title">Pair Code</h1>
+      <p class="card-desc">Enter your WhatsApp number with country code. You'll receive a pairing code to enter in WhatsApp → Linked Devices → Link with Phone Number.</p>
+
+      <label class="input-label" for="number">WhatsApp Number</label>
+      <input
+        type="text"
+        id="number"
+        class="input-field"
+        placeholder="e.g. 2348012345678"
+        maxlength="20"
+      />
+
+      <button class="btn-primary" id="generateBtn" onclick="generatePairCode()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Generate Pair Code
+      </button>
+
+      <div class="loading-bar" id="loading-bar"><div class="loading-bar-inner"></div></div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="result-box" id="resultBox">
+        <div class="result-label">Your Pairing Code</div>
+        <div class="pair-code" id="pairCode"></div>
+        <button class="btn-copy" onclick="copyCode()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Code
+        </button>
+      </div>
+
+      <div class="divider"></div>
+      <button class="btn-ghost" onclick="window.location.href='index.html'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Back to Home
+      </button>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-copy">&copy; 2026 WOLF TECH. All rights reserved.</div>
+  </footer>
+
+  <script src="pair.js"></script>
+</body>
+</html>

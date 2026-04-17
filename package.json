@@ -1,0 +1,16 @@
+{
+  "name": "wolf-bot-pair",
+  "version": "1.0.0",
+  "description": "WOLF TECH WhatsApp Session Generator",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "express": "^4.18.2",
+    "qrcode": "^1.5.4"
+  },
+  "author": "Silent Wolf",
+  "license": "MIT"
+}

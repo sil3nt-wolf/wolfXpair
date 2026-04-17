@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOLF TECH — Session Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: 'JetBrains Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    :root {
+      --primary: #00ff00;
+      --primary-dim: rgba(0,255,0,0.15);
+      --primary-border: rgba(0,255,0,0.2);
+      --primary-border-hover: rgba(0,255,0,0.4);
+      --primary-glow: 0 0 20px rgba(0,255,0,0.3);
+      --primary-glow-lg: 0 0 40px rgba(0,255,0,0.2);
+      --gray-800: #1a1a1a;
+      --gray-500: #6b7280;
+      --gray-400: #9ca3af;
+      --gray-300: #d1d5db;
+      --white: #ffffff;
+      --card-bg: rgba(0,0,0,0.4);
+    }
+
+    /* Neon grid */
+    .neon-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(rgba(0,255,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,0,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+    .neon-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,0,0.06) 0%, transparent 70%);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,255,0,0.3); border-radius: 2px; }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--primary-border);
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(0,255,0,0.05);
+      border: 1px solid var(--primary-border);
+      display: flex; align-items: center; justify-content: center;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    .logo-icon svg { width: 22px; height: 22px; }
+    .logo-text { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.2rem; letter-spacing: 0.15em; }
+    .logo-wolf { color: var(--primary); }
+    .logo-bot  { color: var(--gray-300); }
+    .logo-sub  { font-size: 0.65rem; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+      position: relative;
+      z-index: 10;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 999px;
+      background: rgba(0,255,0,0.05);
+      font-size: 0.75rem;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.8s ease both;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.8s ease 0.1s both;
+    }
+    .title-white { color: var(--white); }
+    .title-green {
+      background: linear-gradient(135deg, rgba(0,255,0,0.9), rgba(0,255,0,0.6));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 0.95rem;
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.5rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+    .hero-desc {
+      max-width: 480px;
+      font-size: 0.95rem;
+      color: var(--gray-400);
+      line-height: 1.7;
+      margin: 0.75rem auto 3rem;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    /* Cards */
+    .cards-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease 0.5s both;
+    }
+    .action-card {
+      width: 240px;
+      padding: 32px 24px;
+      border-radius: 16px;
+      border: 1px solid var(--primary-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+    }
+    .action-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,0,0.4), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .action-card:hover {
+      border-color: var(--primary-border-hover);
+      transform: translateY(-6px);
+      box-shadow: var(--primary-glow-lg);
+    }
+    .action-card:hover::before { opacity: 1; }
+    .card-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: rgba(0,255,0,0.06);
+      border: 1px solid var(--primary-border);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+      transition: transform 0.3s;
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+    .action-card:hover .card-icon { transform: scale(1.1); }
+    .card-icon svg { width: 26px; height: 26px; }
+    .card-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--white);
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .card-desc { font-size: 0.75rem; color: var(--gray-400); line-height: 1.6; margin-bottom: 20px; }
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      background: rgba(0,255,0,0.08);
+      color: var(--primary);
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 8px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .action-card:hover .card-btn { background: rgba(0,255,0,0.15); }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(0,255,0,0.1);
+      background: rgba(0,0,0,0.5);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    .footer-brand { font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700; }
+    .footer-brand .green { color: var(--primary); }
+    .footer-brand .dim { color: var(--gray-500); }
+    .footer-copy { font-size: 0.7rem; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; margin-top: 6px; }
+
+    /* Animations */
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(0,255,0,0.15); }
+      50%       { box-shadow: 0 0 24px rgba(0,255,0,0.3); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .cards-row { flex-direction: column; align-items: center; }
+      .action-card { width: 90%; max-width: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="neon-bg"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text"><span class="logo-wolf">WOLF</span><span class="logo-bot"> TECH</span></div>
+          <div class="logo-sub">Session Generator</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      WhatsApp Device Linking
+    </div>
+    <h1 class="hero-title">
+      <span class="title-white">LINK YOUR</span><br/>
+      <span class="title-green">DEVICE.</span>
+    </h1>
+    <p class="hero-sub">// Choose your pairing method below</p>
+    <p class="hero-desc">
+      Generate a real-time session ID for your WOLF TECH instance.
+      Pair via QR code scan or phone number pairing code.
+    </p>
+
+    <div class="cards-row">
+      <a href="qr.html" class="action-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+            <line x1="20" y1="14" x2="20" y2="20"/><line x1="17" y1="20" x2="20" y2="20"/>
+          </svg>
+        </div>
+        <div class="card-title">QR Code</div>
+        <p class="card-desc">Scan with WhatsApp's "Linked Devices" to link instantly.</p>
+        <span class="card-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Generate QR
+        </span>
+      </a>
+
+      <a href="pair.html" class="action-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </div>
+        <div class="card-title">Pair Code</div>
+        <p class="card-desc">Enter your number and get a code to link via phone number.</p>
+        <span class="card-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Get Code
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-brand"><span class="green">WOLF</span><span class="dim"> TECH</span></div>
+    <div class="footer-copy">&copy; 2026 WOLF TECH. All rights reserved.</div>
+  </footer>
+</body>
+</html>
