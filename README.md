@@ -99,3 +99,4 @@ WOLF-TECH:~eyJub2lzZXlLZXlzIjp7...
 
 Built by [Silent Wolf](https://github.com/sil3nt-wolf)  
 Powered by [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys)
+Enjoy.
